@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		450D93241D56AF4300CB52E2 /* Photo+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 450D93221D56AF4300CB52E2 /* Photo+CoreDataProperties.swift */; };
+		450D93251D56AF4300CB52E2 /* Pin+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 450D93231D56AF4300CB52E2 /* Pin+CoreDataProperties.swift */; };
 		451604941D565DA600F1E6F9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451604931D565DA600F1E6F9 /* AppDelegate.swift */; };
 		451604961D565DA600F1E6F9 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451604951D565DA600F1E6F9 /* MapViewController.swift */; };
 		451604991D565DA600F1E6F9 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 451604971D565DA600F1E6F9 /* Main.storyboard */; };
@@ -17,9 +19,7 @@
 		451604C21D565E5600F1E6F9 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 451604C11D565E5600F1E6F9 /* MapKit.framework */; };
 		451604C71D5683BF00F1E6F9 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 451604C51D5683BF00F1E6F9 /* Model.xcdatamodeld */; };
 		451604CC1D56946D00F1E6F9 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451604CB1D56946D00F1E6F9 /* CoreDataStack.swift */; };
-		451604D11D5697E600F1E6F9 /* Photo+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451604CD1D5697E600F1E6F9 /* Photo+CoreDataProperties.swift */; };
 		451604D21D5697E600F1E6F9 /* Photo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451604CE1D5697E600F1E6F9 /* Photo.swift */; };
-		451604D31D5697E600F1E6F9 /* Pin+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451604CF1D5697E600F1E6F9 /* Pin+CoreDataProperties.swift */; };
 		451604D41D5697E600F1E6F9 /* Pin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451604D01D5697E600F1E6F9 /* Pin.swift */; };
 /* End PBXBuildFile section */
 
@@ -41,6 +41,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		450D93221D56AF4300CB52E2 /* Photo+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Photo+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		450D93231D56AF4300CB52E2 /* Pin+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Pin+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		451604901D565DA600F1E6F9 /* VirtualTourist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VirtualTourist.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		451604931D565DA600F1E6F9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		451604951D565DA600F1E6F9 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
@@ -57,9 +59,7 @@
 		451604C11D565E5600F1E6F9 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		451604C61D5683BF00F1E6F9 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 		451604CB1D56946D00F1E6F9 /* CoreDataStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
-		451604CD1D5697E600F1E6F9 /* Photo+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Photo+CoreDataProperties.swift"; path = "../Photo+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		451604CE1D5697E600F1E6F9 /* Photo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Photo.swift; path = ../Photo.swift; sourceTree = "<group>"; };
-		451604CF1D5697E600F1E6F9 /* Pin+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Pin+CoreDataProperties.swift"; path = "../Pin+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		451604D01D5697E600F1E6F9 /* Pin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Pin.swift; path = ../Pin.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -145,9 +145,9 @@
 				4516049F1D565DA600F1E6F9 /* Info.plist */,
 				451604CB1D56946D00F1E6F9 /* CoreDataStack.swift */,
 				451604C51D5683BF00F1E6F9 /* Model.xcdatamodeld */,
-				451604CD1D5697E600F1E6F9 /* Photo+CoreDataProperties.swift */,
+				450D93221D56AF4300CB52E2 /* Photo+CoreDataProperties.swift */,
 				451604CE1D5697E600F1E6F9 /* Photo.swift */,
-				451604CF1D5697E600F1E6F9 /* Pin+CoreDataProperties.swift */,
+				450D93231D56AF4300CB52E2 /* Pin+CoreDataProperties.swift */,
 				451604D01D5697E600F1E6F9 /* Pin.swift */,
 			);
 			name = Model;
@@ -305,10 +305,10 @@
 				451604D21D5697E600F1E6F9 /* Photo.swift in Sources */,
 				451604CC1D56946D00F1E6F9 /* CoreDataStack.swift in Sources */,
 				451604961D565DA600F1E6F9 /* MapViewController.swift in Sources */,
+				450D93251D56AF4300CB52E2 /* Pin+CoreDataProperties.swift in Sources */,
 				451604D41D5697E600F1E6F9 /* Pin.swift in Sources */,
-				451604D31D5697E600F1E6F9 /* Pin+CoreDataProperties.swift in Sources */,
 				451604941D565DA600F1E6F9 /* AppDelegate.swift in Sources */,
-				451604D11D5697E600F1E6F9 /* Photo+CoreDataProperties.swift in Sources */,
+				450D93241D56AF4300CB52E2 /* Photo+CoreDataProperties.swift in Sources */,
 				451604C71D5683BF00F1E6F9 /* Model.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -534,6 +534,7 @@
 				451604BA1D565DA600F1E6F9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		451604BB1D565DA600F1E6F9 /* Build configuration list for PBXNativeTarget "VirtualTouristTests" */ = {
 			isa = XCConfigurationList;
@@ -542,6 +543,7 @@
 				451604BD1D565DA600F1E6F9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		451604BE1D565DA600F1E6F9 /* Build configuration list for PBXNativeTarget "VirtualTouristUITests" */ = {
 			isa = XCConfigurationList;
@@ -550,6 +552,7 @@
 				451604C01D565DA600F1E6F9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 
