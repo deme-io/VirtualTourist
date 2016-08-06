@@ -8,12 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		451604941D565DA600F1E6F9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451604931D565DA600F1E6F9 /* AppDelegate.swift */; };
-		451604961D565DA600F1E6F9 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451604951D565DA600F1E6F9 /* ViewController.swift */; };
+		451604961D565DA600F1E6F9 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451604951D565DA600F1E6F9 /* MapViewController.swift */; };
 		451604991D565DA600F1E6F9 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 451604971D565DA600F1E6F9 /* Main.storyboard */; };
 		4516049B1D565DA600F1E6F9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4516049A1D565DA600F1E6F9 /* Assets.xcassets */; };
 		4516049E1D565DA600F1E6F9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4516049C1D565DA600F1E6F9 /* LaunchScreen.storyboard */; };
 		451604A91D565DA600F1E6F9 /* VirtualTouristTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451604A81D565DA600F1E6F9 /* VirtualTouristTests.swift */; };
 		451604B41D565DA600F1E6F9 /* VirtualTouristUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451604B31D565DA600F1E6F9 /* VirtualTouristUITests.swift */; };
+		451604C21D565E5600F1E6F9 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 451604C11D565E5600F1E6F9 /* MapKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,7 +37,7 @@
 /* Begin PBXFileReference section */
 		451604901D565DA600F1E6F9 /* VirtualTourist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VirtualTourist.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		451604931D565DA600F1E6F9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		451604951D565DA600F1E6F9 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		451604951D565DA600F1E6F9 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		451604981D565DA600F1E6F9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		4516049A1D565DA600F1E6F9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4516049D1D565DA600F1E6F9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -47,6 +48,7 @@
 		451604AF1D565DA600F1E6F9 /* VirtualTouristUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VirtualTouristUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		451604B31D565DA600F1E6F9 /* VirtualTouristUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirtualTouristUITests.swift; sourceTree = "<group>"; };
 		451604B51D565DA600F1E6F9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		451604C11D565E5600F1E6F9 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				451604C21D565E5600F1E6F9 /* MapKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -77,6 +80,7 @@
 		451604871D565DA600F1E6F9 = {
 			isa = PBXGroup;
 			children = (
+				451604C11D565E5600F1E6F9 /* MapKit.framework */,
 				451604921D565DA600F1E6F9 /* VirtualTourist */,
 				451604A71D565DA600F1E6F9 /* VirtualTouristTests */,
 				451604B21D565DA600F1E6F9 /* VirtualTouristUITests */,
@@ -98,7 +102,7 @@
 			isa = PBXGroup;
 			children = (
 				451604931D565DA600F1E6F9 /* AppDelegate.swift */,
-				451604951D565DA600F1E6F9 /* ViewController.swift */,
+				451604951D565DA600F1E6F9 /* MapViewController.swift */,
 				451604971D565DA600F1E6F9 /* Main.storyboard */,
 				4516049A1D565DA600F1E6F9 /* Assets.xcassets */,
 				4516049C1D565DA600F1E6F9 /* LaunchScreen.storyboard */,
@@ -256,7 +260,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				451604961D565DA600F1E6F9 /* ViewController.swift in Sources */,
+				451604961D565DA600F1E6F9 /* MapViewController.swift in Sources */,
 				451604941D565DA600F1E6F9 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
