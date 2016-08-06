@@ -15,6 +15,8 @@
 		451604A91D565DA600F1E6F9 /* VirtualTouristTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451604A81D565DA600F1E6F9 /* VirtualTouristTests.swift */; };
 		451604B41D565DA600F1E6F9 /* VirtualTouristUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451604B31D565DA600F1E6F9 /* VirtualTouristUITests.swift */; };
 		451604C21D565E5600F1E6F9 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 451604C11D565E5600F1E6F9 /* MapKit.framework */; };
+		451604C41D56839000F1E6F9 /* CoreDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451604C31D56839000F1E6F9 /* CoreDataModel.swift */; };
+		451604C71D5683BF00F1E6F9 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 451604C51D5683BF00F1E6F9 /* Model.xcdatamodeld */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +51,8 @@
 		451604B31D565DA600F1E6F9 /* VirtualTouristUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirtualTouristUITests.swift; sourceTree = "<group>"; };
 		451604B51D565DA600F1E6F9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		451604C11D565E5600F1E6F9 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		451604C31D56839000F1E6F9 /* CoreDataModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataModel.swift; sourceTree = "<group>"; };
+		451604C61D5683BF00F1E6F9 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,11 +106,9 @@
 			isa = PBXGroup;
 			children = (
 				451604931D565DA600F1E6F9 /* AppDelegate.swift */,
-				451604951D565DA600F1E6F9 /* MapViewController.swift */,
-				451604971D565DA600F1E6F9 /* Main.storyboard */,
-				4516049A1D565DA600F1E6F9 /* Assets.xcassets */,
-				4516049C1D565DA600F1E6F9 /* LaunchScreen.storyboard */,
-				4516049F1D565DA600F1E6F9 /* Info.plist */,
+				451604CA1D56840900F1E6F9 /* Controller */,
+				451604C91D5683E900F1E6F9 /* View */,
+				451604C81D5683DC00F1E6F9 /* Model */,
 			);
 			path = VirtualTourist;
 			sourceTree = "<group>";
@@ -127,6 +129,34 @@
 				451604B51D565DA600F1E6F9 /* Info.plist */,
 			);
 			path = VirtualTouristUITests;
+			sourceTree = "<group>";
+		};
+		451604C81D5683DC00F1E6F9 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				4516049F1D565DA600F1E6F9 /* Info.plist */,
+				451604C31D56839000F1E6F9 /* CoreDataModel.swift */,
+				451604C51D5683BF00F1E6F9 /* Model.xcdatamodeld */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
+		451604C91D5683E900F1E6F9 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				4516049C1D565DA600F1E6F9 /* LaunchScreen.storyboard */,
+				451604971D565DA600F1E6F9 /* Main.storyboard */,
+				4516049A1D565DA600F1E6F9 /* Assets.xcassets */,
+			);
+			name = View;
+			sourceTree = "<group>";
+		};
+		451604CA1D56840900F1E6F9 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				451604951D565DA600F1E6F9 /* MapViewController.swift */,
+			);
+			name = Controller;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -260,8 +290,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				451604C41D56839000F1E6F9 /* CoreDataModel.swift in Sources */,
 				451604961D565DA600F1E6F9 /* MapViewController.swift in Sources */,
 				451604941D565DA600F1E6F9 /* AppDelegate.swift in Sources */,
+				451604C71D5683BF00F1E6F9 /* Model.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -504,6 +536,19 @@
 			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		451604C51D5683BF00F1E6F9 /* Model.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				451604C61D5683BF00F1E6F9 /* Model.xcdatamodel */,
+			);
+			currentVersion = 451604C61D5683BF00F1E6F9 /* Model.xcdatamodel */;
+			path = Model.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 451604881D565DA600F1E6F9 /* Project object */;
 }

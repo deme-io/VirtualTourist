@@ -12,10 +12,12 @@ import MapKit
 class MapViewController: UIViewController, MKMapViewDelegate {
     
     // MARK: ===== Properties =====
+    
     let userDefault = NSUserDefaults.standardUserDefaults()
     @IBOutlet weak var mapView: MKMapView!
     
     // MARK: ===== View Methods =====
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -35,6 +37,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     }
     
     // MARK: ===== Map Delegate Methods =====
+    
     func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
         let identifier = "pin"
         var view: MKPinAnnotationView
