@@ -32,7 +32,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         mapView.setRegion(mapRegion, animated: true)
         
         let uilgr = UILongPressGestureRecognizer(target: self, action: #selector(MapViewController.addAnnotation(_:)))
-        uilgr.minimumPressDuration = 2.0
+        uilgr.minimumPressDuration = 0.85
         mapView.addGestureRecognizer(uilgr)
     }
     
@@ -63,7 +63,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     
     func addAnnotation(gestureRecognizer:UIGestureRecognizer){
-        if gestureRecognizer.state == UIGestureRecognizerState.Began {
+        if gestureRecognizer.state == .Began {
             let touchPoint = gestureRecognizer.locationInView(mapView)
             let newCoordinates = mapView.convertPoint(touchPoint, toCoordinateFromView: mapView)
             let annotation = MKPointAnnotation()
