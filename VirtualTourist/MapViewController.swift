@@ -51,6 +51,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     }
     
     
+    
     // MARK: ===== Map Region Persist Methods =====
     
     private func saveMapRegion() {
@@ -98,10 +99,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         saveMapRegion()
     }
     
-    //func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
-        //mapView.deselectAnnotation(view.annotation, animated: false)
-    //    performSegueWithIdentifier("Photo Album Segue", sender: view)
-    //}
+    
     
     func mapView(mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
         performSegueWithIdentifier("Photo Album Segue", sender: view)
