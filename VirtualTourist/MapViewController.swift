@@ -54,7 +54,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         userDefault.setDouble(mapView.region.span.longitudeDelta, forKey: "mapViewSpanLong")
         userDefault.setDouble(mapView.region.center.latitude, forKey: "mapViewCenterLat")
         userDefault.setDouble(mapView.region.center.longitude, forKey: "mapViewCenterLong")
-    }
+        }
     
     private func loadMapRegion() {
         var mapRegion = MKCoordinateRegion()
