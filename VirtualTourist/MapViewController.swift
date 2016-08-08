@@ -69,22 +69,37 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     // MARK: ===== MapView Delegate Methods =====
     
     func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
-        let identifier = "pin"
-        var view: MKPinAnnotationView
-        if let dequeuedView = mapView.dequeueReusableAnnotationViewWithIdentifier(identifier)
-            as? MKPinAnnotationView {
-            dequeuedView.annotation = annotation
-            view = dequeuedView
-        } else {
-            view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
-            view.canShowCallout = true
-            view.animatesDrop = true
+        if let annotation = annotation as? Pin {
+            let identifier = "pin"
+            var view: MKPinAnnotationView
+            if let dequeuedView = mapView.dequeueReusableAnnotationViewWithIdentifier(identifier)
+                as? MKPinAnnotationView {
+                dequeuedView.annotation = annotation
+                view = dequeuedView
+            } else {
+                view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
+                //view.canShowCallout = true
+                view.animatesDrop = true
+            }
+            return view
         }
-        return view
+        return nil
     }
     
     func mapView(mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
         saveMapRegion()
+    }
+    
+    func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
+        performSegueWithIdentifier("Photo Album Segue", sender: view)
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "Photo Album Segue" {
+            if let photoAlbumVC = segue.destinationViewController.childViewControllers[0] as? PhotoAlbumViewController {
+                photoAlbumVC.pin = sender?.annotation as? Pin
+            }
+        }
     }
     
     
@@ -108,21 +123,24 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                             annotation.title = placemark.name
                             dispatch_async(dispatch_get_main_queue(), {
                                 self.mapView.addAnnotation(annotation)
-                                self.mapView.selectAnnotation(annotation, animated: true)
+                                //self.mapView.selectAnnotation(annotation, animated: true)
                             })
                         } else {
                             annotation.title = "Unknown Place"
                             dispatch_async(dispatch_get_main_queue(), {
                                 self.mapView.addAnnotation(annotation)
-                                self.mapView.selectAnnotation(annotation, animated: true)
+                                //self.mapView.selectAnnotation(annotation, animated: true)
                             })
+                        }
+                        
+                        if self.context.hasChanges {
+                            try! self.context.save()
+                            print("Context Saved")
                         }
                     }
                 })
                 
-                if context.hasChanges {
-                    try! context.save()
-                }
+                
                 
                 
                 let request = NSFetchRequest(entityName: "Pin")
