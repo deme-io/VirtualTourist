@@ -13,9 +13,15 @@ import CoreData
 class MapViewController: UIViewController, MKMapViewDelegate {
     
     // MARK: ===== Properties =====
+    let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
+    var context: NSManagedObjectContext {
+        return delegate.dataController.managedObjectContext
+    }
     
     let userDefault = NSUserDefaults.standardUserDefaults()
     @IBOutlet weak var mapView: MKMapView!
+    
+    
     
     // MARK: ===== View Methods =====
     
@@ -29,6 +35,17 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         mapView.addGestureRecognizer(longPressGesture)
         
         loadMapRegion()
+        
+        let request = NSFetchRequest(entityName: "Pin")
+        
+        do {
+            if let pins = try context.executeFetchRequest(request) as? [Pin] {
+                mapView.addAnnotations(pins)
+                print(context.countForFetchRequest(request, error: nil))
+            }
+        } catch {
+            print(error)
+        }
     }
     
     
@@ -76,8 +93,6 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             let touchPoint = gestureRecognizer.locationInView(mapView)
             let newCoordinate = mapView.convertPoint(touchPoint, toCoordinateFromView: mapView)
             
-            let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
-            let context = delegate.dataController.managedObjectContext
             if let annotation = NSEntityDescription.insertNewObjectForEntityForName("Pin", inManagedObjectContext: context) as? Pin {
                 annotation.latitude = newCoordinate.latitude
                 annotation.longitude = newCoordinate.longitude
@@ -89,26 +104,30 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                     }
                     
                     if let placemark = placemarks?[0] {
-                        annotation.title = placemark.name
-                        dispatch_async(dispatch_get_main_queue(), {
-                            self.mapView.addAnnotation(annotation)
-                            self.mapView.selectAnnotation(annotation, animated: true)
-                        })
-                    } else {
-                        annotation.title = "Unknown Place"
-                        dispatch_async(dispatch_get_main_queue(), {
-                            self.mapView.addAnnotation(annotation)
-                            self.mapView.selectAnnotation(annotation, animated: true)
-                        })
+                        if placemark.name != "" {
+                            annotation.title = placemark.name
+                            dispatch_async(dispatch_get_main_queue(), {
+                                self.mapView.addAnnotation(annotation)
+                                self.mapView.selectAnnotation(annotation, animated: true)
+                            })
+                        } else {
+                            annotation.title = "Unknown Place"
+                            dispatch_async(dispatch_get_main_queue(), {
+                                self.mapView.addAnnotation(annotation)
+                                self.mapView.selectAnnotation(annotation, animated: true)
+                            })
+                        }
                     }
                 })
                 
-                try! context.save()
+                if context.hasChanges {
+                    try! context.save()
+                }
+                
                 
                 let request = NSFetchRequest(entityName: "Pin")
                 print(context.countForFetchRequest(request, error: nil))
             }
-            
         }
     }
 
