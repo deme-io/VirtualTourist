@@ -31,8 +31,8 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate {
         if let pin = pin {
             var mapRegion = MKCoordinateRegion()
             mapRegion.center = pin.coordinate
-            mapRegion.span.latitudeDelta = 0.06
-            mapRegion.span.longitudeDelta = 0.06
+            mapRegion.span.latitudeDelta = 0.005
+            mapRegion.span.longitudeDelta = 0.005
             
             mapView.setRegion(mapRegion, animated: true)
             mapView.addAnnotation(pin)
