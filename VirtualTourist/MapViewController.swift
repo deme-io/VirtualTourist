@@ -8,6 +8,7 @@
 
 import UIKit
 import MapKit
+import CoreData
 
 class MapViewController: UIViewController, MKMapViewDelegate {
     
@@ -23,6 +24,22 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         
         mapView.delegate = self
         
+        let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(MapViewController.addAnnotation(_:)))
+        longPressGesture.minimumPressDuration = 0.85
+        mapView.addGestureRecognizer(longPressGesture)
+        
+        loadMapRegion()
+    }
+    
+    
+    private func saveMapRegion() {
+        userDefault.setDouble(mapView.region.span.latitudeDelta, forKey: "mapViewSpanLat")
+        userDefault.setDouble(mapView.region.span.longitudeDelta, forKey: "mapViewSpanLong")
+        userDefault.setDouble(mapView.region.center.latitude, forKey: "mapViewCenterLat")
+        userDefault.setDouble(mapView.region.center.longitude, forKey: "mapViewCenterLong")
+    }
+    
+    private func loadMapRegion() {
         var mapRegion = MKCoordinateRegion()
         mapRegion.span.latitudeDelta = userDefault.doubleForKey("mapViewSpanLat")
         mapRegion.span.longitudeDelta = userDefault.doubleForKey("mapViewSpanLong")
@@ -30,13 +47,9 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         mapRegion.center.longitude = userDefault.doubleForKey("mapViewCenterLong")
         
         mapView.setRegion(mapRegion, animated: true)
-        
-        let uilgr = UILongPressGestureRecognizer(target: self, action: #selector(MapViewController.addAnnotation(_:)))
-        uilgr.minimumPressDuration = 0.85
-        mapView.addGestureRecognizer(uilgr)
     }
     
-    // MARK: ===== Map Delegate Methods =====
+    // MARK: ===== MapView Delegate Methods =====
     
     func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
         let identifier = "pin"
@@ -54,42 +67,48 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     }
     
     func mapView(mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
-        
-        userDefault.setDouble(mapView.region.span.latitudeDelta, forKey: "mapViewSpanLat")
-        userDefault.setDouble(mapView.region.span.longitudeDelta, forKey: "mapViewSpanLong")
-        userDefault.setDouble(mapView.region.center.latitude, forKey: "mapViewCenterLat")
-        userDefault.setDouble(mapView.region.center.longitude, forKey: "mapViewCenterLong")
+        saveMapRegion()
     }
     
     
     func addAnnotation(gestureRecognizer:UIGestureRecognizer){
         if gestureRecognizer.state == .Began {
             let touchPoint = gestureRecognizer.locationInView(mapView)
-            let newCoordinates = mapView.convertPoint(touchPoint, toCoordinateFromView: mapView)
-            let annotation = MKPointAnnotation()
+            let newCoordinate = mapView.convertPoint(touchPoint, toCoordinateFromView: mapView)
             
-            annotation.coordinate = newCoordinates
-            
-            CLGeocoder().reverseGeocodeLocation(CLLocation(latitude: newCoordinates.latitude, longitude: newCoordinates.longitude), completionHandler: {(placemarks, error) -> Void in
-                if error != nil {
-                    print("Reverse geocoder failed with error" + error!.localizedDescription)
-                    return
-                }
+            let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
+            let context = delegate.dataController.managedObjectContext
+            if let annotation = NSEntityDescription.insertNewObjectForEntityForName("Pin", inManagedObjectContext: context) as? Pin {
+                annotation.latitude = newCoordinate.latitude
+                annotation.longitude = newCoordinate.longitude
                 
-                if let placemark = placemarks?[0] {
-                    annotation.title = placemark.name
-                    dispatch_async(dispatch_get_main_queue(), {
-                        self.mapView.addAnnotation(annotation)
-                        self.mapView.selectAnnotation(annotation, animated: true)
-                    })
-                } else {
-                    annotation.title = "Unknown Place"
-                    dispatch_async(dispatch_get_main_queue(), {
-                        self.mapView.addAnnotation(annotation)
-                        self.mapView.selectAnnotation(annotation, animated: true)
-                    })
-                }
-            })
+                CLGeocoder().reverseGeocodeLocation(CLLocation(latitude: newCoordinate.latitude, longitude: newCoordinate.longitude), completionHandler: {(placemarks, error) -> Void in
+                    if error != nil {
+                        print("Reverse geocoder failed with error" + error!.localizedDescription)
+                        return
+                    }
+                    
+                    if let placemark = placemarks?[0] {
+                        annotation.title = placemark.name
+                        dispatch_async(dispatch_get_main_queue(), {
+                            self.mapView.addAnnotation(annotation)
+                            self.mapView.selectAnnotation(annotation, animated: true)
+                        })
+                    } else {
+                        annotation.title = "Unknown Place"
+                        dispatch_async(dispatch_get_main_queue(), {
+                            self.mapView.addAnnotation(annotation)
+                            self.mapView.selectAnnotation(annotation, animated: true)
+                        })
+                    }
+                })
+                
+                try! context.save()
+                
+                let request = NSFetchRequest(entityName: "Pin")
+                print(context.countForFetchRequest(request, error: nil))
+            }
+            
         }
     }
 

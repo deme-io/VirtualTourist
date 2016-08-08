@@ -12,10 +12,7 @@ import MapKit
 
 class Pin: NSManagedObject, MKAnnotation {
 
-// Insert code here to add functionality to your managed object subclass
     var coordinate: CLLocationCoordinate2D {
         return CLLocationCoordinate2DMake(Double(latitude!), Double(longitude!))
     }
-    
-
 }
