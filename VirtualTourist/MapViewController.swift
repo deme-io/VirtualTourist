@@ -13,6 +13,7 @@ import CoreData
 class MapViewController: UIViewController, MKMapViewDelegate {
     
     // MARK: ===== Properties =====
+    
     let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
     var context: NSManagedObjectContext {
         return delegate.dataController.managedObjectContext
@@ -20,6 +21,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     let userDefault = NSUserDefaults.standardUserDefaults()
     @IBOutlet weak var mapView: MKMapView!
+    
     
     
     
@@ -49,6 +51,8 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     }
     
     
+    // MARK: ===== Map Region Persist Methods =====
+    
     private func saveMapRegion() {
         userDefault.setDouble(mapView.region.span.latitudeDelta, forKey: "mapViewSpanLat")
         userDefault.setDouble(mapView.region.span.longitudeDelta, forKey: "mapViewSpanLong")
@@ -66,6 +70,9 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         mapView.setRegion(mapRegion, animated: true)
     }
     
+    
+    
+    
     // MARK: ===== MapView Delegate Methods =====
     
     func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
@@ -78,7 +85,8 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                 view = dequeuedView
             } else {
                 view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
-                //view.canShowCallout = true
+                view.rightCalloutAccessoryView = UIButton(type: .DetailDisclosure)
+                view.canShowCallout = true
                 view.animatesDrop = true
             }
             return view
@@ -90,7 +98,12 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         saveMapRegion()
     }
     
-    func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
+    //func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
+        //mapView.deselectAnnotation(view.annotation, animated: false)
+    //    performSegueWithIdentifier("Photo Album Segue", sender: view)
+    //}
+    
+    func mapView(mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
         performSegueWithIdentifier("Photo Album Segue", sender: view)
     }
     
@@ -123,13 +136,13 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                             annotation.title = placemark.name
                             dispatch_async(dispatch_get_main_queue(), {
                                 self.mapView.addAnnotation(annotation)
-                                //self.mapView.selectAnnotation(annotation, animated: true)
+                                self.mapView.selectAnnotation(annotation, animated: true)
                             })
                         } else {
                             annotation.title = "Unknown Place"
                             dispatch_async(dispatch_get_main_queue(), {
                                 self.mapView.addAnnotation(annotation)
-                                //self.mapView.selectAnnotation(annotation, animated: true)
+                                self.mapView.selectAnnotation(annotation, animated: true)
                             })
                         }
                         
@@ -139,16 +152,12 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                         }
                     }
                 })
-                
-                
-                
-                
                 let request = NSFetchRequest(entityName: "Pin")
                 print(context.countForFetchRequest(request, error: nil))
             }
         }
     }
-
-
+    
+    
 }
 
