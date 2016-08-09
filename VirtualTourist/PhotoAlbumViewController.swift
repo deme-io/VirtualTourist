@@ -56,14 +56,22 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
                     let photos = data[FlickrAPI.FlickrResponseKeys.Photo] as! [[String:AnyObject]]
                     for photo in photos  {
                         let request = NSFetchRequest(entityName: "Photo")
-                        request.predicate = NSPredicate(format: "id = %@", photo[FlickrAPI.FlickrResponseKeys.ID] as! NSNumber)
+                        request.predicate = NSPredicate(format: "id = %@", photo[FlickrAPI.FlickrResponseKeys.ID] as! String)
                         
-                        // TODO: Compare Photo objects
+                        do {
+                            if let fetchedPhoto = try self.context.executeFetchRequest(request) as? [Photo] {
+                                if photo[FlickrAPI.FlickrResponseKeys.ID] as? String == fetchedPhoto.first?.id {
+                                    return
+                                }
+                            }
+                        } catch {
+                            print(error)
+                        }
                         
                         if let newPhoto = NSEntityDescription.insertNewObjectForEntityForName("Photo", inManagedObjectContext: self.context) as? Photo {
                             newPhoto.pin = self.pin
                             newPhoto.imageURL = photo[FlickrAPI.FlickrResponseKeys.MediumURL] as? String
-                            newPhoto.id = photo[FlickrAPI.FlickrResponseKeys.ID] as? NSNumber
+                            newPhoto.id = photo[FlickrAPI.FlickrResponseKeys.ID] as? String
                             
                             guard let url = newPhoto.imageURL else {
                                 return
@@ -101,7 +109,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     // MARK: ===== Collection View Delegate Methods =====
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         let request = NSFetchRequest(entityName: "Photo")
-        print(context.countForFetchRequest(request, error: nil))
+        print("Number of items in section \(context.countForFetchRequest(request, error: nil))")
         return context.countForFetchRequest(request, error: nil)
     }
     

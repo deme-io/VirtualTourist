@@ -142,7 +142,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     
     func addAnnotation(gestureRecognizer:UIGestureRecognizer){
-        if gestureRecognizer.state == .Ended {
+        if gestureRecognizer.state == .Began {
             let touchPoint = gestureRecognizer.locationInView(mapView)
             let newCoordinate = mapView.convertPoint(touchPoint, toCoordinateFromView: mapView)
             
