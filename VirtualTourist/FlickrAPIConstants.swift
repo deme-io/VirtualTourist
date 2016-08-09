@@ -59,4 +59,11 @@ extension FlickrAPI {
         static let OKStatus = "ok"
     }
     
+    struct Search {
+        static let BBoxHalfWidth = 1.0
+        static let BBoxHalfHeight = 1.0
+        static let LatRange = (-90.0, 90.0)
+        static let LonRange = (-180.0, 180.0)
+    }
+    
 }

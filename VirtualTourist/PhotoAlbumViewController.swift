@@ -36,7 +36,10 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate {
             
             mapView.setRegion(mapRegion, animated: true)
             mapView.addAnnotation(pin)
+            
+            FlickrAPI.sharedInstance.searchForPhotosByCoordinate(pin.coordinate)
         }
+        
     }
     
     

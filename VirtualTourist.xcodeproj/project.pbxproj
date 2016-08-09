@@ -148,11 +148,9 @@
 		451604C81D5683DC00F1E6F9 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				45FD14F81D597CAE00B406A6 /* FlickrAPI.swift */,
-				45FD14FA1D597D7700B406A6 /* FlickrAPIConstants.swift */,
+				45FD14FC1D597E2800B406A6 /* FlickrAPI */,
+				45FD14FD1D598DE000B406A6 /* Core Data */,
 				4516049F1D565DA600F1E6F9 /* Info.plist */,
-				451604CB1D56946D00F1E6F9 /* CoreDataStack.swift */,
-				451604C51D5683BF00F1E6F9 /* Model.xcdatamodeld */,
 				450D93221D56AF4300CB52E2 /* Photo+CoreDataProperties.swift */,
 				451604CE1D5697E600F1E6F9 /* Photo.swift */,
 				450D93231D56AF4300CB52E2 /* Pin+CoreDataProperties.swift */,
@@ -178,6 +176,24 @@
 				455384781D5857E1008809FA /* PhotoAlbumViewController.swift */,
 			);
 			name = Controller;
+			sourceTree = "<group>";
+		};
+		45FD14FC1D597E2800B406A6 /* FlickrAPI */ = {
+			isa = PBXGroup;
+			children = (
+				45FD14F81D597CAE00B406A6 /* FlickrAPI.swift */,
+				45FD14FA1D597D7700B406A6 /* FlickrAPIConstants.swift */,
+			);
+			name = FlickrAPI;
+			sourceTree = "<group>";
+		};
+		45FD14FD1D598DE000B406A6 /* Core Data */ = {
+			isa = PBXGroup;
+			children = (
+				451604CB1D56946D00F1E6F9 /* CoreDataStack.swift */,
+				451604C51D5683BF00F1E6F9 /* Model.xcdatamodeld */,
+			);
+			name = "Core Data";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
