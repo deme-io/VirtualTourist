@@ -71,7 +71,6 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         do {
             if let pins = try context.executeFetchRequest(request) as? [Pin] {
                 mapView.addAnnotations(pins)
-                print(context.countForFetchRequest(request, error: nil))
             }
         } catch {
             print(error)

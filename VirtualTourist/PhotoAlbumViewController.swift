@@ -55,6 +55,11 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
                     }
                     let photos = data[FlickrAPI.FlickrResponseKeys.Photo] as! [[String:AnyObject]]
                     for photo in photos  {
+                        let request = NSFetchRequest(entityName: "Photo")
+                        request.predicate = NSPredicate(format: "id = %@", photo[FlickrAPI.FlickrResponseKeys.ID] as! NSNumber)
+                        
+                        // TODO: Compare Photo objects
+                        
                         if let newPhoto = NSEntityDescription.insertNewObjectForEntityForName("Photo", inManagedObjectContext: self.context) as? Photo {
                             newPhoto.pin = self.pin
                             newPhoto.imageURL = photo[FlickrAPI.FlickrResponseKeys.MediumURL] as? String
@@ -69,13 +74,12 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
                             newPhoto.image = NSData(contentsOfURL: imageURL)
                             
                             let request = NSFetchRequest(entityName: "Photo")
-                            print("There are: \(self.context.countForFetchRequest(request, error: nil)) photos in Care Data")
+                            print("There are \(self.context.countForFetchRequest(request, error: nil)) photos in CoreData")
                         }
                     }
                     
                     if self.context.hasChanges {
                         try! self.context.save()
-                        print("Context Saved")
                     }
                 }
             })
