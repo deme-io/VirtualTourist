@@ -72,7 +72,6 @@ class FlickrAPI: NSObject {
         if latMinus < -90 {
             latMinus = -90
         }
-        print("\(longMinus),\(latMinus),\(longPlus),\(latPlus)")
         return "\(longMinus),\(latMinus),\(longPlus),\(latPlus)"
     }
     
@@ -108,7 +107,7 @@ class FlickrAPI: NSObject {
             do {
                 parsedResult = try NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments)
             } catch {
-                print("Could not parse JSON data: \(data)")
+                disPlayError("Could not parse JSON data: \(data)")
             }
             print(parsedResult)
         }
