@@ -37,7 +37,13 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate {
             mapView.setRegion(mapRegion, animated: true)
             mapView.addAnnotation(pin)
             
-            FlickrAPI.sharedInstance.searchForPhotosByCoordinate(pin.coordinate)
+            FlickrAPI.sharedInstance.searchForPhotosByCoordinate(pin.coordinate, completionHandlerForSearch: { (data, errorString) in
+                if (errorString != nil) {
+                    print(errorString)
+                } else {
+                    //print("Data from search: \(data)")
+                }
+            })
         }
         
     }

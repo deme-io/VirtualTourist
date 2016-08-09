@@ -20,6 +20,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     }
     
     let userDefault = NSUserDefaults.standardUserDefaults()
+    
     @IBOutlet weak var mapView: MKMapView!
     
     
@@ -37,19 +38,29 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         mapView.addGestureRecognizer(longPressGesture)
         
         
-        if !userDefault.boolForKey("appHasBeenLaunchedBefore") {
-            print("First time launched")
-            var mapRegion = MKCoordinateRegion()
-            mapRegion.center = CLLocationCoordinate2D(latitude: 39.8282, longitude: -98.5795)
-            mapRegion.span = MKCoordinateSpan(latitudeDelta: 70, longitudeDelta: 70)
-            mapView.setRegion(mapRegion, animated: true)
-            userDefault.setBool(true, forKey: "appHasBeenLaunchedBefore")
-        } else {
-            print("Launched before")
+        if userDefault.boolForKey("appHasBeenLaunchedBefore") {
             loadMapRegion()
+        } else {
+            setDefaultMapRegion()
+            userDefault.setBool(true, forKey: "appHasBeenLaunchedBefore")
+            saveMapRegion()
         }
         
-        
+        loadMapPins()
+    }
+    
+    
+    // MARK: ===== Map Data Methods =====
+    
+    private func setDefaultMapRegion() {
+        var mapRegion = MKCoordinateRegion()
+        mapRegion.center = CLLocationCoordinate2D(latitude: 39.8282, longitude: -98.5795)
+        mapRegion.span = MKCoordinateSpan(latitudeDelta: 70, longitudeDelta: 70)
+        mapView.setRegion(mapRegion, animated: true)
+    }
+    
+    
+    private func loadMapPins() {
         let request = NSFetchRequest(entityName: "Pin")
         
         do {

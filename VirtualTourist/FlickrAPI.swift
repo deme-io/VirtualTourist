@@ -12,13 +12,20 @@ import MapKit
 class FlickrAPI: NSObject {
     static var sharedInstance = FlickrAPI()
     
-    func searchForPhotosByCoordinate(coordinate: CLLocationCoordinate2D) {
-        let url = flickrURLBySearch(coordinate)
-        getImagesFromFlickrBySearch(url)
+    func searchForPhotosByCoordinate(coordinate: CLLocationCoordinate2D, completionHandlerForSearch: (data: [String:AnyObject]?, errorString: String?) -> Void) {
+        let parameters = parametersForURLBySearch(coordinate)
+        let url = flickrURLFromParameters(parameters)
+        getImagesFromFlickrBySearch(url) { (data, errorString) in
+            guard let data = data else {
+                completionHandlerForSearch(data: nil, errorString: errorString)
+                return
+            }
+            completionHandlerForSearch(data: data, errorString: nil)
+        }
     }
     
     
-    private func flickrURLBySearch(coordinate: CLLocationCoordinate2D) -> NSURL{
+    private func parametersForURLBySearch(coordinate: CLLocationCoordinate2D) -> [String:AnyObject] {
         let methodParameters = [
                 FlickrAPI.FlickrParameterKeys.SafeSearch: FlickrAPI.FlickrParameterValues.UseSafeSearch,
                 FlickrAPI.FlickrParameterKeys.BoundingBox: bboxString(coordinate),
@@ -28,7 +35,7 @@ class FlickrAPI: NSObject {
                 FlickrAPI.FlickrParameterKeys.Format: FlickrAPI.FlickrParameterValues.ResponseFormat,
                 FlickrAPI.FlickrParameterKeys.NoJSONCallback: FlickrAPI.FlickrParameterValues.DisableJSONCallback
             ]
-        return flickrURLFromParameters(methodParameters)
+        return methodParameters
     }
     
     
@@ -76,39 +83,41 @@ class FlickrAPI: NSObject {
     }
     
     
-    private func getImagesFromFlickrBySearch(url: NSURL) {
+    private func getImagesFromFlickrBySearch(url: NSURL, completionHandlerForGET: (data: [String:AnyObject]?, errorString: String?) -> Void) {
         let session = NSURLSession.sharedSession()
         let request = NSURLRequest(URL: url)
         
         let task = session.dataTaskWithRequest(request) { (data, response, error) in
             
-            func disPlayError(error: String) {
-                print(error)
+            func returnError(errorString: String) {
+                completionHandlerForGET(data: nil, errorString: errorString)
             }
             
             guard (error == nil) else {
-                disPlayError("There was an error with your request: \(error?.localizedDescription)")
+                returnError("There was an error with your request: \(error?.localizedDescription)")
                 return
             }
             
             guard let statusCode = (response as? NSHTTPURLResponse)?.statusCode where statusCode >= 200 && statusCode <= 299 else {
-                disPlayError("Your request returned a status code other than 2xx!")
+                returnError("Your request returned a status code other than 2xx!")
                 print((response as? NSHTTPURLResponse)?.statusCode)
                 return
             }
             
             guard let data = data else {
-                disPlayError("No data was returned by the request!")
+                returnError("No data was returned by the request!")
                 return
             }
             
-            var parsedResult: AnyObject!
+            var parsedResult: [String:AnyObject]!
             
             do {
-                parsedResult = try NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments)
+                parsedResult = try NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments) as! [String:AnyObject]
             } catch {
-                disPlayError("Could not parse JSON data: \(data)")
+                returnError("Could not parse JSON data: \(data)")
             }
+            
+            completionHandlerForGET(data: parsedResult, errorString: nil)
             print(parsedResult)
         }
         task.resume()
