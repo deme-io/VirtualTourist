@@ -14,8 +14,8 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     // MARK: ===== Properties =====
     
-    let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
     var context: NSManagedObjectContext {
+        let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
         return delegate.dataController.managedObjectContext
     }
     
@@ -36,7 +36,19 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         longPressGesture.minimumPressDuration = 0.85
         mapView.addGestureRecognizer(longPressGesture)
         
-        loadMapRegion()
+        
+        if !userDefault.boolForKey("appHasBeenLaunchedBefore") {
+            print("First time launched")
+            var mapRegion = MKCoordinateRegion()
+            mapRegion.center = CLLocationCoordinate2D(latitude: 39.8282, longitude: -98.5795)
+            mapRegion.span = MKCoordinateSpan(latitudeDelta: 70, longitudeDelta: 70)
+            mapView.setRegion(mapRegion, animated: true)
+            userDefault.setBool(true, forKey: "appHasBeenLaunchedBefore")
+        } else {
+            print("Launched before")
+            loadMapRegion()
+        }
+        
         
         let request = NSFetchRequest(entityName: "Pin")
         
