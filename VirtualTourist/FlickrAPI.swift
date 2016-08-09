@@ -99,8 +99,7 @@ class FlickrAPI: NSObject {
             }
             
             guard let statusCode = (response as? NSHTTPURLResponse)?.statusCode where statusCode >= 200 && statusCode <= 299 else {
-                returnError("Your request returned a status code other than 2xx!")
-                print((response as? NSHTTPURLResponse)?.statusCode)
+                returnError("Your request returned a status code other than 2xx! \((response as? NSHTTPURLResponse)?.statusCode)")
                 return
             }
             
@@ -117,8 +116,12 @@ class FlickrAPI: NSObject {
                 returnError("Could not parse JSON data: \(data)")
             }
             
-            completionHandlerForGET(data: parsedResult, errorString: nil)
-            print(parsedResult)
+            guard let photosDictionary = parsedResult["photos"] as? [String:AnyObject] else {
+                returnError("Could not get photos from downloaded data")
+                return
+            }
+            
+            completionHandlerForGET(data: photosDictionary, errorString: nil)
         }
         task.resume()
     }

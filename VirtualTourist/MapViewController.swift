@@ -44,7 +44,12 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             setDefaultMapRegion()
             userDefault.setBool(true, forKey: "appHasBeenLaunchedBefore")
             saveMapRegion()
-        }
+        }        
+    }
+    
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
         
         loadMapPins()
     }
@@ -138,7 +143,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     
     func addAnnotation(gestureRecognizer:UIGestureRecognizer){
-        if gestureRecognizer.state == .Began {
+        if gestureRecognizer.state == .Ended {
             let touchPoint = gestureRecognizer.locationInView(mapView)
             let newCoordinate = mapView.convertPoint(touchPoint, toCoordinateFromView: mapView)
             

@@ -52,6 +52,7 @@ extension FlickrAPI {
         static let MediumURL = "url_m"
         static let Pages = "pages"
         static let Total = "total"
+        static let ID = "id"
     }
     
     // MARK: Flickr Response Values

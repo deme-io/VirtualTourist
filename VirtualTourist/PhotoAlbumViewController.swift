@@ -8,8 +8,14 @@
 
 import UIKit
 import MapKit
+import CoreData
 
-class PhotoAlbumViewController: UIViewController, MKMapViewDelegate {
+class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectionViewDelegate, UICollectionViewDataSource {
+    
+    var context: NSManagedObjectContext {
+        let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        return delegate.dataController.managedObjectContext
+    }
 
     
     // MARK: ===== Properties =====
@@ -28,6 +34,9 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate {
         
         title = pin?.title
         
+        mapView.delegate = self
+        collectionView.delegate = self
+        
         if let pin = pin {
             var mapRegion = MKCoordinateRegion()
             mapRegion.center = pin.coordinate
@@ -41,7 +50,33 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate {
                 if (errorString != nil) {
                     print(errorString)
                 } else {
-                    //print("Data from search: \(data)")
+                    guard let data = data else {
+                        return
+                    }
+                    let photos = data[FlickrAPI.FlickrResponseKeys.Photo] as! [[String:AnyObject]]
+                    for photo in photos  {
+                        if let newPhoto = NSEntityDescription.insertNewObjectForEntityForName("Photo", inManagedObjectContext: self.context) as? Photo {
+                            newPhoto.pin = self.pin
+                            newPhoto.imageURL = photo[FlickrAPI.FlickrResponseKeys.MediumURL] as? String
+                            newPhoto.id = photo[FlickrAPI.FlickrResponseKeys.ID] as? NSNumber
+                            
+                            guard let url = newPhoto.imageURL else {
+                                return
+                            }
+                            guard let imageURL = NSURL(string: url) else {
+                                return
+                            }
+                            newPhoto.image = NSData(contentsOfURL: imageURL)
+                            
+                            let request = NSFetchRequest(entityName: "Photo")
+                            print("There are: \(self.context.countForFetchRequest(request, error: nil)) photos in Care Data")
+                        }
+                    }
+                    
+                    if self.context.hasChanges {
+                        try! self.context.save()
+                        print("Context Saved")
+                    }
                 }
             })
         }
@@ -56,6 +91,26 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate {
 
     @IBAction func doneButtonPressed(sender: AnyObject) {
         dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    
+    // MARK: ===== Collection View Delegate Methods =====
+    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        let request = NSFetchRequest(entityName: "Photo")
+        print(context.countForFetchRequest(request, error: nil))
+        return context.countForFetchRequest(request, error: nil)
+    }
+    
+    func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+        return 1
+    }
+    
+    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+        let identifier = "cell"
+        
+        let cell = collectionView.dequeueReusableCellWithReuseIdentifier(identifier, forIndexPath: indexPath) as! CustomCollectionViewCell
+        
+        return cell
     }
 
 }
