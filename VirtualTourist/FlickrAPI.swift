@@ -24,6 +24,16 @@ class FlickrAPI: NSObject {
         }
     }
     
+    func downloadImageFromFlickr(imageURL: NSURL, completionHandlerForImageDownload: (image: UIImage?, errorString: String?) -> Void) {
+        guard let data = NSData(contentsOfURL: imageURL) else {
+            completionHandlerForImageDownload(image: nil, errorString: "Could not download image")
+            return
+        }
+
+        let image = UIImage(data: data)
+        completionHandlerForImageDownload(image: image, errorString: nil)
+    }
+    
     
     private func parametersForURLBySearch(coordinate: CLLocationCoordinate2D) -> [String:AnyObject] {
         let methodParameters = [
