@@ -23,8 +23,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var collectionView: UICollectionView!
     
-    var pin: Pin?
-    
+    var pin: Pin?    
     
     
     // MARK: ===== View Methods =====
@@ -46,53 +45,58 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
             mapView.setRegion(mapRegion, animated: true)
             mapView.addAnnotation(pin)
             
-            FlickrAPI.sharedInstance.searchForPhotosByCoordinate(pin.coordinate, completionHandlerForSearch: { (data, errorString) in
-                if (errorString != nil) {
-                    print(errorString)
-                } else {
-                    guard let data = data else {
-                        return
-                    }
-                    let photos = data[FlickrAPI.FlickrResponseKeys.Photo] as! [[String:AnyObject]]
-                    for photo in photos  {
-                        let request = NSFetchRequest(entityName: "Photo")
-                        request.predicate = NSPredicate(format: "id = %@", photo[FlickrAPI.FlickrResponseKeys.ID] as! String)
-                        
-                        do {
-                            if let fetchedPhoto = try self.context.executeFetchRequest(request) as? [Photo] {
-                                if photo[FlickrAPI.FlickrResponseKeys.ID] as? String == fetchedPhoto.first?.id {
-                                    return
-                                }
-                            }
-                        } catch {
-                            print(error)
-                        }
-                        
-                        if let newPhoto = NSEntityDescription.insertNewObjectForEntityForName("Photo", inManagedObjectContext: self.context) as? Photo {
-                            newPhoto.pin = self.pin
-                            newPhoto.imageURL = photo[FlickrAPI.FlickrResponseKeys.MediumURL] as? String
-                            newPhoto.id = photo[FlickrAPI.FlickrResponseKeys.ID] as? String
-                            
-                            guard let url = newPhoto.imageURL else {
-                                return
-                            }
-                            guard let imageURL = NSURL(string: url) else {
-                                return
-                            }
-                            newPhoto.image = NSData(contentsOfURL: imageURL)
-                            
-                            let request = NSFetchRequest(entityName: "Photo")
-                            print("There are \(self.context.countForFetchRequest(request, error: nil)) photos in CoreData")
-                        }
-                    }
-                    
-                    if self.context.hasChanges {
-                        try! self.context.save()
-                    }
-                }
-            })
+            downloadPinImages(pin)
         }
         
+    }
+    
+    
+    private func downloadPinImages(pin: Pin) {
+        FlickrAPI.sharedInstance.searchForPhotosByCoordinate(pin.coordinate, completionHandlerForSearch: { (data, errorString) in
+            if (errorString != nil) {
+                print(errorString)
+            } else {
+                guard let data = data else {
+                    return
+                }
+                let photos = data[FlickrAPI.FlickrResponseKeys.Photo] as! [[String:AnyObject]]
+                for photo in photos  {
+                    let request = NSFetchRequest(entityName: "Photo")
+                    request.predicate = NSPredicate(format: "id = %@", photo[FlickrAPI.FlickrResponseKeys.ID] as! String)
+                    
+                    do {
+                        if let fetchedPhoto = try self.context.executeFetchRequest(request) as? [Photo] {
+                            if photo[FlickrAPI.FlickrResponseKeys.ID] as? String == fetchedPhoto.first?.id {
+                                return
+                            }
+                        }
+                    } catch {
+                        print(error)
+                    }
+                    
+                    if let newPhoto = NSEntityDescription.insertNewObjectForEntityForName("Photo", inManagedObjectContext: self.context) as? Photo {
+                        newPhoto.pin = self.pin
+                        newPhoto.imageURL = photo[FlickrAPI.FlickrResponseKeys.MediumURL] as? String
+                        newPhoto.id = photo[FlickrAPI.FlickrResponseKeys.ID] as? String
+                        
+                        guard let url = newPhoto.imageURL else {
+                            return
+                        }
+                        guard let imageURL = NSURL(string: url) else {
+                            return
+                        }
+                        newPhoto.image = NSData(contentsOfURL: imageURL)
+                        
+                        let request = NSFetchRequest(entityName: "Photo")
+                        print("There are \(self.context.countForFetchRequest(request, error: nil)) photos in CoreData")
+                    }
+                }
+                
+                if self.context.hasChanges {
+                    try! self.context.save()
+                }
+            }
+        })
     }
     
     
@@ -107,6 +111,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     
     
     // MARK: ===== Collection View Delegate Methods =====
+    
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         let request = NSFetchRequest(entityName: "Photo")
         print("Number of items in section \(context.countForFetchRequest(request, error: nil))")
@@ -121,6 +126,17 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         let identifier = "cell"
         
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier(identifier, forIndexPath: indexPath) as! CustomCollectionViewCell
+        
+        if pin?.photos?.allObjects.isEmpty == true {
+            return cell
+        }
+        
+        guard let photo = pin?.photos?.allObjects[indexPath.row] as? Photo else {
+            return cell
+        }
+        
+        
+        cell.imageView.image = UIImage(data: photo.image!)
         
         return cell
     }
