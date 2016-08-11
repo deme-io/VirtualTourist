@@ -44,7 +44,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             setDefaultMapRegion()
             userDefault.setBool(true, forKey: "appHasBeenLaunchedBefore")
             saveMapRegion()
-        }        
+        }
     }
     
     

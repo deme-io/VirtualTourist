@@ -25,12 +25,39 @@ class FlickrAPI: NSObject {
     }
     
     func downloadImageFromFlickr(imageURL: NSURL, completionHandlerForImageDownload: (imageData: NSData?, errorString: String?) -> Void) {
-        guard let data = NSData(contentsOfURL: imageURL) else {
-            completionHandlerForImageDownload(imageData: nil, errorString: "Could not download image")
-            return
+        let session = NSURLSession.sharedSession()
+        let request = NSURLRequest(URL: imageURL)
+        
+        let task = session.dataTaskWithRequest(request) { (data, response, error) in
+            func returnError(errorString: String) {
+                completionHandlerForImageDownload(imageData: nil, errorString: errorString)
+            }
+            
+            guard (error == nil) else {
+                returnError("There was an error with your request: \(error?.localizedDescription)")
+                return
+            }
+            
+            guard let statusCode = (response as? NSHTTPURLResponse)?.statusCode where statusCode >= 200 && statusCode <= 299 else {
+                returnError("Your request returned a status code other than 2xx! \((response as? NSHTTPURLResponse)?.statusCode)")
+                return
+            }
+            
+            guard let data = data else {
+                returnError("No data was returned by the request!")
+                return
+            }
+            
+            completionHandlerForImageDownload(imageData: data,errorString: nil)
         }
-
-        completionHandlerForImageDownload(imageData: data, errorString: nil)
+        task.resume()
+        
+//        guard let data = NSData(contentsOfURL: imageURL) else {
+//            completionHandlerForImageDownload(imageData: nil, errorString: "Could not download image")
+//            return
+//        }
+//
+//        completionHandlerForImageDownload(imageData: data, errorString: nil)
     }
     
     
@@ -41,6 +68,7 @@ class FlickrAPI: NSObject {
                 FlickrAPI.FlickrParameterKeys.Extras: FlickrAPI.FlickrParameterValues.MediumURL,
                 FlickrAPI.FlickrParameterKeys.APIKey: FlickrAPI.FlickrParameterValues.APIKey,
                 FlickrAPI.FlickrParameterKeys.Method: FlickrAPI.FlickrParameterValues.SearchMethod,
+                FlickrAPI.FlickrParameterKeys.PerPage: FlickrAPI.FlickrParameterValues.ResultsPerPage,
                 FlickrAPI.FlickrParameterKeys.Format: FlickrAPI.FlickrParameterValues.ResponseFormat,
                 FlickrAPI.FlickrParameterKeys.NoJSONCallback: FlickrAPI.FlickrParameterValues.DisableJSONCallback
             ]

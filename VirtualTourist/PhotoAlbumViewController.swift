@@ -24,8 +24,13 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     @IBOutlet weak var collectionView: UICollectionView!
     
     var pin: Pin?
-    var photosArray = [Photo]()
-    
+    var photosArray: [Photo] {
+        var array = pin?.photos?.allObjects as! [Photo]
+        array.sortInPlace({ (p1, p2) -> Bool in
+            return p1.id?.compare(p2.id!) == NSComparisonResult.OrderedDescending
+        })
+        return array
+    }
     
     // MARK: ===== View Methods =====
     
@@ -36,7 +41,14 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         
         mapView.delegate = self
         collectionView.delegate = self
+        collectionView.dataSource = self
         
+        setMapRegion()
+        loadPinPhotosData()
+    }
+    
+    
+    private func setMapRegion() {
         if let pin = pin {
             var mapRegion = MKCoordinateRegion()
             mapRegion.center = pin.coordinate
@@ -45,8 +57,12 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
             
             mapView.setRegion(mapRegion, animated: true)
             mapView.addAnnotation(pin)
-            
-            getPinImagesData(pin, completionHandlerForDownload: { (success) in
+        }
+    }
+    
+    private func loadPinPhotosData() {
+        if pin != nil {
+            downloadPinPhotosData({ (success) in
                 if success == true {
                     print("Photos array count: \(self.photosArray.count)")
                     dispatch_async(dispatch_get_main_queue(), {
@@ -56,11 +72,14 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
                 }
             })
         }
-        
     }
     
     
-    private func getPinImagesData(pin: Pin, completionHandlerForDownload: (success: Bool) -> Void) {
+    private func downloadPinPhotosData(completionHandlerForDownload: (success: Bool) -> Void) {
+        guard let pin = pin else {
+            return
+        }
+        
         FlickrAPI.sharedInstance.searchForPhotosByCoordinate(pin.coordinate, completionHandlerForSearch: { (data, errorString) in
             if (errorString != nil) {
                 print(errorString)
@@ -70,6 +89,8 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
                     completionHandlerForDownload(success: false)
                     return
                 }
+                
+                print(data)
                 
                 let photos = data[FlickrAPI.FlickrResponseKeys.Photo] as! [[String:AnyObject]]
                 
@@ -83,8 +104,8 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
                         }
                         
                         if photo[FlickrAPI.FlickrResponseKeys.ID] as? String == fetchedPhotos.first?.id {
-                            self.photosArray.append(fetchedPhotos.first!)
-                            print("Added Fetched Photo to array")
+                            //self.photosArray.append(fetchedPhotos.first!)
+                            //print("Added Fetched Photo to array")
                             continue
                         }
                     } catch {
@@ -93,23 +114,19 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
                     
                     
                     guard let newPhoto = NSEntityDescription.insertNewObjectForEntityForName("Photo", inManagedObjectContext: self.context) as? Photo else {
-                        return
+                        continue
                     }
                     
                     newPhoto.pin = self.pin
                     newPhoto.imageURL = photo[FlickrAPI.FlickrResponseKeys.MediumURL] as? String
                     newPhoto.id = photo[FlickrAPI.FlickrResponseKeys.ID] as? String
-                    self.photosArray.append(newPhoto)
-                    print("Added Downloaded Photo to array")
+                    //self.photosArray.append(newPhoto)
+                    //print("Added Downloaded Photo to array")
                 }
                 
                 if self.context.hasChanges {
                     try! self.context.save()
                 }
-                
-                let newRequest = NSFetchRequest(entityName: "Photo")
-                newRequest.predicate = NSPredicate(format: "pin.latitude = %@", pin.latitude!)
-                print("\(self.context.countForFetchRequest(newRequest, error: nil)) photos have been downloaded for this pin")
                 
                 completionHandlerForDownload(success: true)
             }
@@ -124,6 +141,9 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     }
 
     @IBAction func doneButtonPressed(sender: AnyObject) {
+        if self.context.hasChanges {
+            try! self.context.save()
+        }
         dismissViewControllerAnimated(true, completion: nil)
     }
     
@@ -131,7 +151,12 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     // MARK: ===== Collection View Delegate Methods =====
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return photosArray.count
+        if photosArray.isEmpty {
+            return 0
+        } else {
+            return photosArray.count
+        }
+        
     }
     
     func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
@@ -143,46 +168,66 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier(identifier, forIndexPath: indexPath) as! CustomCollectionViewCell
         
-//        guard !photosArray.isEmpty else {
-//            return cell
-//        }
-//        
-//        let photo = photosArray[indexPath.row]
-//        
-//        guard let url = photo.imageURL else {
-//            return cell
-//        }
-//        
-//        guard let imageURL = NSURL(string: url) else {
-//            return cell
-//        }
-//        
-//        guard photo.image != nil else {
-//            FlickrAPI.sharedInstance.downloadImageFromFlickr(imageURL) { (imageData, errorString) in
-//                guard errorString == nil else {
-//                    return
-//                }
-//                
-//                photo.image = imageData
-//                
-//                let image = UIImage(data: imageData!)
-//                
-//                dispatch_async(dispatch_get_main_queue(), {
-//                    cell.imageView.image = image!
-//                })
-//            }
-//            return cell
-//        }
-//        
-//        if photo.image != nil {
-//            cell.imageView.image = UIImage(data: photo.image!)
-//        }
+        cell.imageView.image = UIImage(named: "placeholder.png")
         
-        return cell
+        guard !photosArray.isEmpty else {
+            return cell
+        }
+        
+        let photo = photosArray[indexPath.item]
+        
+        if photo.image != nil {
+            let image = UIImage(data: photo.image!)
+            cell.imageView.image = image
+            return cell
+        } else {
+            let request = NSFetchRequest(entityName: "Photo")
+            request.predicate = NSPredicate(format: "id = %@", photo.id!)
+            guard let fetchedPhoto = try! self.context.executeFetchRequest(request).first as? Photo else {
+                return cell
+            }
+            
+            if fetchedPhoto.image != nil {
+                photo.image = fetchedPhoto.image
+                let image = UIImage(data: fetchedPhoto.image!)
+                cell.imageView.image = image
+                return cell
+            } else {
+                guard let url = fetchedPhoto.imageURL else {
+                    return cell
+                }
+                
+                guard let imageURL = NSURL(string: url) else {
+                    return cell
+                }
+                
+                FlickrAPI.sharedInstance.downloadImageFromFlickr(imageURL) { (imageData, errorString) in
+                    guard errorString == nil else {
+                        return
+                    }
+                    
+                    let photoJPEG = UIImageJPEGRepresentation(UIImage(data: imageData!)!, 0.01)!
+                    photo.image = photoJPEG
+                    fetchedPhoto.image = photoJPEG
+                    
+                    let image = UIImage(data: photoJPEG)
+                    dispatch_async(dispatch_get_main_queue(), {
+                        cell.imageView.image = image!
+                    })
+                }
+                return cell
+            }
+        }
     }
     
-//    func collectionView(collectionView: UICollectionView, shouldDeselectItemAtIndexPath indexPath: NSIndexPath) -> Bool {
-//        <#code#>
-//    }
+    
+    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+        let photo = photosArray[indexPath.item]
+        context.deleteObject(photo)
+        photo.pin = nil
+        collectionView.deleteItemsAtIndexPaths([indexPath])
+        try! context.save()
+    }
+    
     
 }
