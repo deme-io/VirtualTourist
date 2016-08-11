@@ -61,16 +61,17 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     }
     
     private func loadPinPhotosData() {
-        if pin != nil {
+        if pin != nil && photosArray.isEmpty {
             downloadPinPhotosData({ (success) in
                 if success == true {
                     print("Photos array count: \(self.photosArray.count)")
                     dispatch_async(dispatch_get_main_queue(), {
                         self.collectionView.reloadData()
                     })
-                    
                 }
             })
+        } else {
+            collectionView.reloadData()
         }
     }
     
