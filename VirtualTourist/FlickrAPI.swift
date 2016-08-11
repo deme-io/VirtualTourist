@@ -24,14 +24,13 @@ class FlickrAPI: NSObject {
         }
     }
     
-    func downloadImageFromFlickr(imageURL: NSURL, completionHandlerForImageDownload: (image: UIImage?, errorString: String?) -> Void) {
+    func downloadImageFromFlickr(imageURL: NSURL, completionHandlerForImageDownload: (imageData: NSData?, errorString: String?) -> Void) {
         guard let data = NSData(contentsOfURL: imageURL) else {
-            completionHandlerForImageDownload(image: nil, errorString: "Could not download image")
+            completionHandlerForImageDownload(imageData: nil, errorString: "Could not download image")
             return
         }
 
-        let image = UIImage(data: data)
-        completionHandlerForImageDownload(image: image, errorString: nil)
+        completionHandlerForImageDownload(imageData: data, errorString: nil)
     }
     
     

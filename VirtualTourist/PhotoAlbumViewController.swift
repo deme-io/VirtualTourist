@@ -24,7 +24,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     @IBOutlet weak var collectionView: UICollectionView!
     
     var pin: Pin?
-    var totalPhotos = 0
+    var photosArray = [Photo]()
     
     
     // MARK: ===== View Methods =====
@@ -46,56 +46,75 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
             mapView.setRegion(mapRegion, animated: true)
             mapView.addAnnotation(pin)
             
-            downloadPinImages(pin)
-            }
+            getPinImagesData(pin, completionHandlerForDownload: { (success) in
+                if success == true {
+                    print("Photos array count: \(self.photosArray.count)")
+                    dispatch_async(dispatch_get_main_queue(), {
+                        self.collectionView.reloadData()
+                    })
+                    
+                }
+            })
+        }
         
     }
     
     
-    private func downloadPinImages(pin: Pin) {
+    private func getPinImagesData(pin: Pin, completionHandlerForDownload: (success: Bool) -> Void) {
         FlickrAPI.sharedInstance.searchForPhotosByCoordinate(pin.coordinate, completionHandlerForSearch: { (data, errorString) in
             if (errorString != nil) {
                 print(errorString)
+                completionHandlerForDownload(success: false)
             } else {
                 guard let data = data else {
+                    completionHandlerForDownload(success: false)
                     return
                 }
                 
-                self.totalPhotos = Int(data["total"] as! String)!
-                print("Download func total: \(self.totalPhotos)")
-                
                 let photos = data[FlickrAPI.FlickrResponseKeys.Photo] as! [[String:AnyObject]]
-                for photo in photos  {
-                    let request = NSFetchRequest(entityName: "Photo")
-                    request.predicate = NSPredicate(format: "id = %@", photo[FlickrAPI.FlickrResponseKeys.ID] as! String)
-                    
+                
+                for photo in photos {
                     do {
-                        if let fetchedPhoto = try self.context.executeFetchRequest(request) as? [Photo] {
-                            if photo[FlickrAPI.FlickrResponseKeys.ID] as? String == fetchedPhoto.first?.id {
-                                return
-                            }
+                        let request = NSFetchRequest(entityName: "Photo")
+                        request.predicate = NSPredicate(format: "id = %@", photo[FlickrAPI.FlickrResponseKeys.ID] as! String)
+                        
+                        guard let fetchedPhotos = try self.context.executeFetchRequest(request) as? [Photo] else {
+                            continue
+                        }
+                        
+                        if photo[FlickrAPI.FlickrResponseKeys.ID] as? String == fetchedPhotos.first?.id {
+                            self.photosArray.append(fetchedPhotos.first!)
+                            print("Added Fetched Photo to array")
+                            continue
                         }
                     } catch {
                         print(error)
                     }
                     
-                    if let newPhoto = NSEntityDescription.insertNewObjectForEntityForName("Photo", inManagedObjectContext: self.context) as? Photo {
-                        newPhoto.pin = self.pin
-                        newPhoto.imageURL = photo[FlickrAPI.FlickrResponseKeys.MediumURL] as? String
-                        newPhoto.id = photo[FlickrAPI.FlickrResponseKeys.ID] as? String
-                        
-                        let request = NSFetchRequest(entityName: "Photo")
-                        print("\(self.context.countForFetchRequest(request, error: nil)) photos have been downloaded")
+                    
+                    guard let newPhoto = NSEntityDescription.insertNewObjectForEntityForName("Photo", inManagedObjectContext: self.context) as? Photo else {
+                        return
                     }
                     
-                    
+                    newPhoto.pin = self.pin
+                    newPhoto.imageURL = photo[FlickrAPI.FlickrResponseKeys.MediumURL] as? String
+                    newPhoto.id = photo[FlickrAPI.FlickrResponseKeys.ID] as? String
+                    self.photosArray.append(newPhoto)
+                    print("Added Downloaded Photo to array")
                 }
                 
                 if self.context.hasChanges {
                     try! self.context.save()
                 }
+                
+                let newRequest = NSFetchRequest(entityName: "Photo")
+                newRequest.predicate = NSPredicate(format: "pin.latitude = %@", pin.latitude!)
+                print("\(self.context.countForFetchRequest(newRequest, error: nil)) photos have been downloaded for this pin")
+                
+                completionHandlerForDownload(success: true)
             }
         })
+        
     }
     
     
@@ -112,7 +131,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     // MARK: ===== Collection View Delegate Methods =====
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return (pin?.photos?.allObjects.count)!
+        return photosArray.count
     }
     
     func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
@@ -124,43 +143,46 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier(identifier, forIndexPath: indexPath) as! CustomCollectionViewCell
         
-        guard ((pin?.photos?.allObjects[indexPath.row]) != nil) else {
-            return cell
-        }
-        
-        guard let photo = pin?.photos?.allObjects[indexPath.row] as? Photo else {
-            return cell
-        }
-        
-        guard let url = photo.imageURL else {
-            return cell
-        }
-        guard let imageURL = NSURL(string: url) else {
-            return cell
-        }
-        
-        FlickrAPI.sharedInstance.downloadImageFromFlickr(imageURL) { (image, errorString) in
-            guard errorString == nil else {
-                return
-            }
-            
-            dispatch_async(dispatch_get_main_queue(), { 
-                cell.imageView.image = image
-            })
-        }
-        
-//        photo.image = NSData(contentsOfURL: imageURL)
+//        guard !photosArray.isEmpty else {
+//            return cell
+//        }
+//        
+//        let photo = photosArray[indexPath.row]
+//        
+//        guard let url = photo.imageURL else {
+//            return cell
+//        }
+//        
+//        guard let imageURL = NSURL(string: url) else {
+//            return cell
+//        }
+//        
+//        guard photo.image != nil else {
+//            FlickrAPI.sharedInstance.downloadImageFromFlickr(imageURL) { (imageData, errorString) in
+//                guard errorString == nil else {
+//                    return
+//                }
+//                
+//                photo.image = imageData
+//                
+//                let image = UIImage(data: imageData!)
+//                
+//                dispatch_async(dispatch_get_main_queue(), {
+//                    cell.imageView.image = image!
+//                })
+//            }
+//            return cell
+//        }
 //        
 //        if photo.image != nil {
 //            cell.imageView.image = UIImage(data: photo.image!)
-//        } else {
-//            let url = NSURL(string: photo.imageURL!)
-//            let data = NSData(contentsOfURL: url!)
-//            photo.image = data
-//            cell.imageView.image = UIImage(data: data!)
 //        }
         
         return cell
     }
+    
+//    func collectionView(collectionView: UICollectionView, shouldDeselectItemAtIndexPath indexPath: NSIndexPath) -> Bool {
+//        <#code#>
+//    }
     
 }
