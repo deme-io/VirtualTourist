@@ -12,16 +12,11 @@ import CoreData
 
 class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectionViewDelegate, UICollectionViewDataSource {
     
-    var context: NSManagedObjectContext {
-        let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
-        return delegate.dataController.managedObjectContext
-    }
-
-    
     // MARK: ===== Properties =====
     
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var newCollectionButton: UIBarButtonItem!
     
     var pin: Pin?
     var photosArray: [Photo] {
@@ -31,6 +26,13 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         })
         return array
     }
+    
+    var context: NSManagedObjectContext {
+        let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        return delegate.dataController.managedObjectContext
+    }
+    
+    let firstGroup = dispatch_group_create()
     
     // MARK: ===== View Methods =====
     
@@ -62,6 +64,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     
     private func loadPinPhotosData() {
         if pin != nil && photosArray.isEmpty {
+            newCollectionButton.enabled = false
             downloadPinPhotosData({ (success) in
                 if success == true {
                     print("Photos array count: \(self.photosArray.count)")
@@ -105,8 +108,6 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
                         }
                         
                         if photo[FlickrAPI.FlickrResponseKeys.ID] as? String == fetchedPhotos.first?.id {
-                            //self.photosArray.append(fetchedPhotos.first!)
-                            //print("Added Fetched Photo to array")
                             continue
                         }
                     } catch {
@@ -121,8 +122,6 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
                     newPhoto.pin = self.pin
                     newPhoto.imageURL = photo[FlickrAPI.FlickrResponseKeys.MediumURL] as? String
                     newPhoto.id = photo[FlickrAPI.FlickrResponseKeys.ID] as? String
-                    //self.photosArray.append(newPhoto)
-                    //print("Added Downloaded Photo to array")
                 }
                 
                 if self.context.hasChanges {
@@ -139,6 +138,8 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
     // MARK: ===== IBAction Methods =====
     
     @IBAction func newCollectionButtonPressed(sender: AnyObject) {
+        pin?.photos = nil
+        loadPinPhotosData()
     }
 
     @IBAction func doneButtonPressed(sender: AnyObject) {
@@ -194,6 +195,7 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
                 cell.imageView.image = image
                 return cell
             } else {
+                newCollectionButton.enabled = false
                 guard let url = fetchedPhoto.imageURL else {
                     return cell
                 }
@@ -201,6 +203,8 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
                 guard let imageURL = NSURL(string: url) else {
                     return cell
                 }
+                
+                dispatch_group_enter(firstGroup)
                 
                 FlickrAPI.sharedInstance.downloadImageFromFlickr(imageURL) { (imageData, errorString) in
                     guard errorString == nil else {
@@ -215,11 +219,18 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
                     dispatch_async(dispatch_get_main_queue(), {
                         cell.imageView.image = image!
                     })
+                    dispatch_group_leave(self.firstGroup)
+                }
+                
+                dispatch_group_notify(firstGroup, dispatch_get_main_queue()) {
+                    self.newCollectionButton.enabled = true
                 }
                 return cell
             }
         }
     }
+    
+    
     
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
@@ -229,6 +240,5 @@ class PhotoAlbumViewController: UIViewController, MKMapViewDelegate, UICollectio
         collectionView.deleteItemsAtIndexPaths([indexPath])
         try! context.save()
     }
-    
     
 }

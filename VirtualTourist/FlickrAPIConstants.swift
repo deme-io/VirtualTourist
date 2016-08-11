@@ -42,7 +42,7 @@ extension FlickrAPI {
         static let GalleryID = "5704-72157622566655097"
         static let MediumURL = "url_m"
         static let UseSafeSearch = "1"
-        static let ResultsPerPage = "100"
+        static let ResultsPerPage = "30"
     }
     
     // MARK: Flickr Response Keys
