@@ -55,7 +55,11 @@
                                 <rect key="frame" x="0.0" y="556" width="600" height="44"/>
                                 <items>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="0tW-9H-TuX"/>
-                                    <barButtonItem title="New Collection" id="THJ-7q-iXw"/>
+                                    <barButtonItem title="New Collection" id="THJ-7q-iXw">
+                                        <connections>
+                                            <action selector="newCollectionButtonPressed:" destination="Dox-Wf-Q7P" id="Fnv-CN-7HK"/>
+                                        </connections>
+                                    </barButtonItem>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="Ylv-C7-k5B"/>
                                 </items>
                             </toolbar>
@@ -66,14 +70,21 @@
                                 </constraints>
                             </mapView>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="lNe-W9-hxG">
-                                <rect key="frame" x="0.0" y="222" width="600" height="334"/>
+                                <rect key="frame" x="0.0" y="216" width="600" height="340"/>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="2" minimumInteritemSpacing="2" id="cEm-6R-r6M">
+                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="4" minimumInteritemSpacing="0.0" id="cEm-6R-r6M">
                                     <size key="itemSize" width="90" height="90"/>
                                     <size key="headerReferenceSize" width="0.0" height="0.0"/>
                                     <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
+                                <label key="backgroundView" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="This pin has no photos" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="ADW-13-cL5">
+                                    <rect key="frame" x="0.0" y="0.0" width="600" height="340"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
                                 <cells>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFill" reuseIdentifier="cell" id="akO-Sm-41G" customClass="CustomCollectionViewCell" customModule="VirtualTourist" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="0.0" width="90" height="90"/>
@@ -113,7 +124,7 @@
                             <constraint firstItem="lNe-W9-hxG" firstAttribute="leading" secondItem="FTO-UB-Ei4" secondAttribute="leading" id="AWa-2X-mxs"/>
                             <constraint firstItem="FTO-UB-Ei4" firstAttribute="top" secondItem="lNe-W9-hxG" secondAttribute="bottom" id="Ltl-V6-Vl8"/>
                             <constraint firstItem="cop-Xj-Fxq" firstAttribute="trailing" secondItem="lNe-W9-hxG" secondAttribute="trailing" id="OTp-PA-yVw"/>
-                            <constraint firstItem="lNe-W9-hxG" firstAttribute="top" secondItem="cop-Xj-Fxq" secondAttribute="bottom" constant="8" symbolic="YES" id="QQX-lW-RPN"/>
+                            <constraint firstItem="lNe-W9-hxG" firstAttribute="top" secondItem="cop-Xj-Fxq" secondAttribute="bottom" constant="2" id="QQX-lW-RPN"/>
                             <constraint firstItem="cop-Xj-Fxq" firstAttribute="leading" secondItem="0PG-DG-PQs" secondAttribute="leading" id="YJW-BR-fWn"/>
                             <constraint firstItem="FTO-UB-Ei4" firstAttribute="bottom" secondItem="gjz-Rr-iMm" secondAttribute="top" id="Zj9-wH-6MC"/>
                             <constraint firstItem="cop-Xj-Fxq" firstAttribute="top" secondItem="HkQ-Sm-b14" secondAttribute="bottom" id="hh5-fW-kT0"/>
@@ -129,6 +140,7 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="collectionLabel" destination="ADW-13-cL5" id="Da9-ko-yKF"/>
                         <outlet property="collectionView" destination="lNe-W9-hxG" id="eev-GW-Vfr"/>
                         <outlet property="mapView" destination="cop-Xj-Fxq" id="jcK-h4-pnR"/>
                         <outlet property="newCollectionButton" destination="THJ-7q-iXw" id="3XE-7F-Gxi"/>

@@ -12,8 +12,8 @@ import MapKit
 class FlickrAPI: NSObject {
     static var sharedInstance = FlickrAPI()
     
-    func searchForPhotosByCoordinate(coordinate: CLLocationCoordinate2D, completionHandlerForSearch: (data: [String:AnyObject]?, errorString: String?) -> Void) {
-        let parameters = parametersForURLBySearch(coordinate)
+    func searchForPhotosByCoordinate(coordinate: CLLocationCoordinate2D, pageNumber: Int, completionHandlerForSearch: (data: [String:AnyObject]?, errorString: String?) -> Void) {
+        let parameters = parametersForURLBySearch(coordinate, pageNumber: pageNumber)
         let url = flickrURLFromParameters(parameters)
         getImagesFromFlickrBySearch(url) { (data, errorString) in
             guard let data = data else {
@@ -51,17 +51,10 @@ class FlickrAPI: NSObject {
             completionHandlerForImageDownload(imageData: data,errorString: nil)
         }
         task.resume()
-        
-//        guard let data = NSData(contentsOfURL: imageURL) else {
-//            completionHandlerForImageDownload(imageData: nil, errorString: "Could not download image")
-//            return
-//        }
-//
-//        completionHandlerForImageDownload(imageData: data, errorString: nil)
     }
     
     
-    private func parametersForURLBySearch(coordinate: CLLocationCoordinate2D) -> [String:AnyObject] {
+    private func parametersForURLBySearch(coordinate: CLLocationCoordinate2D, pageNumber: Int) -> [String:AnyObject] {
         let methodParameters = [
                 FlickrAPI.FlickrParameterKeys.SafeSearch: FlickrAPI.FlickrParameterValues.UseSafeSearch,
                 FlickrAPI.FlickrParameterKeys.BoundingBox: bboxString(coordinate),
@@ -69,10 +62,11 @@ class FlickrAPI: NSObject {
                 FlickrAPI.FlickrParameterKeys.APIKey: FlickrAPI.FlickrParameterValues.APIKey,
                 FlickrAPI.FlickrParameterKeys.Method: FlickrAPI.FlickrParameterValues.SearchMethod,
                 FlickrAPI.FlickrParameterKeys.PerPage: FlickrAPI.FlickrParameterValues.ResultsPerPage,
+                FlickrAPI.FlickrParameterKeys.PageNumber: pageNumber,
                 FlickrAPI.FlickrParameterKeys.Format: FlickrAPI.FlickrParameterValues.ResponseFormat,
                 FlickrAPI.FlickrParameterKeys.NoJSONCallback: FlickrAPI.FlickrParameterValues.DisableJSONCallback
             ]
-        return methodParameters
+        return methodParameters as! [String : AnyObject]
     }
     
     
